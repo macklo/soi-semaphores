@@ -110,6 +110,7 @@ int main(){
 		printf("Usunieto segment pamieci %d\n", shmid);
 	}
 
+	/*test*/
 
 	return 0;
 }
