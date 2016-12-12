@@ -1,7 +1,7 @@
 #include "const.h"
 #include "message.h"
 
-key_t getKey(char qID[2]){
+key_t getKey(char qID[3]){
 	char src[8];
 	strcpy(src, "files/");
 	strcat(src, qID);

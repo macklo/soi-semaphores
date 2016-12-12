@@ -11,7 +11,7 @@
 
 int memoryId[3];
 
-key_t getKey(char qID[2]){
+key_t getKey(char qID[3]){
 	char src[8];
 	strcpy(src, "files/");
 	strcat(src, qID);
@@ -42,31 +42,37 @@ int removeShm (int shmid){
 	return shmctl(shmid, IPC_RMID, NULL);
 }
 
+static struct sembuf buf;
+
+int up(int semid, int semnum){
+	buf.sem_num = semnum;
+	buf.sem_op = 1;
+	buf.sem_flg = 0;
+	if (semop(semid, &buf, 1) == -1)
+		return -1;
+	return 0;
+}
+
+int down(int semid, int semnum){
+	buf.sem_num = semnum;
+	buf.sem_op = -1;
+	buf.sem_flg = 0;
+	if (semop(semid, &buf, 1) == -1)
+		return -1;
+	return 0;
+}
+
 struct queue messageQueue[3];
 
 int main(){
-	/*int semid = semget(45281,2, IPC_CREAT);
+
+	
+	int semid = semget(45281,2, IPC_CREAT);
 	if(semid != -1)
 		printf("Utworzono semafor\n");
 	printf("%d\n", semid);
 
-
-
-	int i;
-	for(i = 0; i<3; i++){
-		int id = 45281;
-		while (id){
-			int shmid = shmget(45281-id, SIZE*sizeof(int), 0600);
-			if(shmid != -1){
-				printf("%d Utworzono pamiec dzielona %d\n", id, shmid);
-				memoryId[i] = shmid;
-				break;
-			}
-			id--;
-		}
-	}*/
-
-	char qID[2] = C;
+	char qID[3] = "BM";
 
 	key_t key = getKey(qID);
 
@@ -92,12 +98,20 @@ int main(){
 		printf("Przyłączono pamiec dzielona %d wskaznik %p\n", shmid,tmp);
 	}
 
+	char teststr[4] = "AAA";
+	struct message msgtest = createMessage(teststr, 0);
+	tmp->queue[0] = msgtest;
+	printf("%s priority %d\n", tmp->queue[0].str, tmp->queue[0].priority);
+
 	int f1;
 	f1 = shmdt(tmp);
 	if(f1!=-1){
 		printf("Odlaczono segment pamieci %p\n", tmp);
 	}
 
+	
+
+	
 
 	int f2;
 	f2 = shmctl(shmid, IPC_RMID, NULL);
