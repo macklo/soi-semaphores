@@ -35,9 +35,42 @@ struct message popMessage(struct queue *q){
 
 int putMessage (struct queue *q, struct message msg){
 	if(!q->full){
-		q->queue[q->last] = msg;
-		q->last++;
-		q->last = q->last%SIZE;
+		if(q->empty){
+			q->queue[q->first] = msg;
+			q->last++;
+			q->last = q->last%SIZE;
+			q->empty = 0;
+		}
+		else if(msg.priority == 1){
+			q->queue[q->last] = msg;
+			q->last++;
+			q->last = q->last%SIZE;
+			q->empty = 0;
+		}
+		else{
+
+			if(q->queue[q->first].priority == 1){
+				if (q->first == 0) q->first = SIZE - 1;
+				else q->first = q->first - 1;
+				q->queue[q->first] = msg;
+			}
+			else{
+				int i = q->first;
+				int toSave;
+				if (q->first == 0) toSave = SIZE - 1;
+				else toSave = q->first - 1;
+				while ( q->queue[i].priority == 1 && toSave!=q->last){
+					q->queue[toSave] = q->queue[i];
+					toSave++;
+					i++;
+					toSave = toSave % SIZE;
+					i = i % SIZE;
+				}
+				if (q->first == 0) q->first = SIZE - 1;
+				else q->first = q->first - 1;
+				q->queue[toSave] = msg;
+			}
+		}
 		q->empty = 0;
 		if (q->last == q->first)
 			q->full = 1;

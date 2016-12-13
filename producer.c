@@ -21,13 +21,15 @@ int main(){
 	msgQInit(messageQueue);
 	semIDInit(semID);
 	struct message msg;
+	int i = 0;
 	while (messageQueue[0]->full != 1){
-		msg = createRandomMessage(0);
+		msg = createRandomMessage(i%2);
 		down(semID[0], EMPTY);
 		down(semID[0], MUTEX);
 		putMessage(messageQueue[0], msg);
 		up(semID[0], MUTEX);
 		up(semID[0], FULL);
+		i++;
 	}
 	// popMessage(messageQueue[0]);
 	printf("%d %d\n", messageQueue[0]->full, messageQueue[0]->empty);
