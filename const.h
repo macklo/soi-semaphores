@@ -1,7 +1,7 @@
 #ifndef CONST_H
 #define CONST_H
 
-#define SIZE 10
+#define SIZE 20
 
 #define A_ID 0
 #define B_ID 1
@@ -21,5 +21,7 @@
 
 const char *mFileID[3] = {"AM", "BM", "CM"};
 const char *sFileID[3] = {"AS", "BS", "CS"};
+
+const char *exFileID = "EX";
 
 #endif

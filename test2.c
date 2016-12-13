@@ -5,19 +5,40 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h> 
+#include <unistd.h>
 
 #include "message.h"
 #include "const.h"
 #include "shm.h"
 #include "sem.h"
 #include "msgq.h"
+#include "ex.h"
 
 int memoryId[3];
 
 struct queue* messageQueue[3];
 
+int ms = 1000;
+int *ex;
+int exSemID;
 
-int main(){/*
+int main(){
+	ex = exInit();
+	exSemID = semEXInit();
+	printf("%d\n", *ex);
+	int i = 1;
+	while(i<10){
+		down(exSemID, 0);
+		if(*ex == 1) break;
+		up(exSemID, 0 );
+		printf("%d\n", i);
+		usleep(ms*1000);
+		i++;
+	}
+
+	semEXKill(exSemID);
+	exKill(ex);
+/*
 	mFileID[0] = "AM";
 	mFileID[1] = "BM";
 	mFileID[2] = "CM";*/
@@ -34,14 +55,14 @@ int main(){/*
 	//int semid = semget(key, 3, IPC_CREAT);
 	int semid = getSemID(key);
 	if(semid != -1)
-		printf("Utworzono semafor %d\n", semid);
+		printf("Utwo	rzono semafor %d\n", semid);
 
 	int fl1 = removeSem(semid);//semctl (semid, 3 ,IPC_RMID, 0);
 	if(fl1 != -1)
 		printf("Usunieto semafor %d\n", semid);
 
 */
-    struct queue *tmp;
+    /*struct queue *tmp;
     msgQInit(messageQueue);
     char teststr[4] = "AAA";
 	struct message msgtest = createRandomMessage(0);
@@ -52,7 +73,7 @@ int main(){/*
     printf("%s priority %d\n", messageQueue[0]->queue[0].str, messageQueue[0]->queue[0].priority);
     printf("%d %d\n", messageQueue[0]->first, messageQueue[0]->last);
     printf("%d %d\n", messageQueue[0]->empty, messageQueue[0]->full);
-    msgQKill(messageQueue);
+    msgQKill(messageQueue);*/
 
 
 /*
