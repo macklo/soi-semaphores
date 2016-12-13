@@ -8,92 +8,60 @@
 
 #include "message.h"
 #include "const.h"
+#include "shm.h"
+#include "sem.h"
+#include "msgq.h"
 
 int memoryId[3];
 
-key_t getKey(char qID[3]){
-	char src[8];
-	strcpy(src, "files/");
-	strcat(src, qID);
-	key_t key;
-	if ((key = ftok(src, 'p')) == -1) /*Here the file must exist */ 
-	{
-        return -1;
-    }
-    return key;
-}
+struct queue* messageQueue[3];
 
-int getShmID(key_t key){
-	int shmid = shmget(key, sizeof(struct queue), IPC_CREAT | 0660);
-	return shmid;
-}
 
-struct queue* attachShm(int shmid){
-	struct queue *q = (struct queue*)shmat(shmid,NULL,0);
-	return q;
-}
-
-int detachShm(struct queue* q){
-	int f = shmdt(q);
-	return f;
-}
-
-int removeShm (int shmid){
-	return shmctl(shmid, IPC_RMID, NULL);
-}
-
-static struct sembuf buf;
-
-int up(int semid, int semnum){
-	buf.sem_num = semnum;
-	buf.sem_op = 1;
-	buf.sem_flg = 0;
-	if (semop(semid, &buf, 1) == -1)
-		return -1;
-	return 0;
-}
-
-int down(int semid, int semnum){
-	buf.sem_num = semnum;
-	buf.sem_op = -1;
-	buf.sem_flg = 0;
-	if (semop(semid, &buf, 1) == -1)
-		return -1;
-	return 0;
-}
-
-struct queue messageQueue[3];
-
-int main(){
-
-	
-	int semid = semget(45281,2, IPC_CREAT);
-	if(semid != -1)
-		printf("Utworzono semafor\n");
-	printf("%d\n", semid);
-
-	char qID[3] = "BM";
+int main(){/*
+	mFileID[0] = "AM";
+	mFileID[1] = "BM";
+	mFileID[2] = "CM";*/
+	//char tmp[3] = mFileID[0];
+	/*key_t mykey = getKey(mFileID[0]);
+	printf("%s %d\n", mFileID[2], mykey);
+*/
+	/*char qID[3] = "CS";
 
 	key_t key = getKey(qID);
 
-    printf("%d\n", key);
+	printf("%d\n", key);
+	
+	//int semid = semget(key, 3, IPC_CREAT);
+	int semid = getSemID(key);
+	if(semid != -1)
+		printf("Utworzono semafor %d\n", semid);
 
-    /*size_t tmp = sizeof(struct queue);
-    printf("%d\n", (int)tmp);*/
+	int fl1 = removeSem(semid);//semctl (semid, 3 ,IPC_RMID, 0);
+	if(fl1 != -1)
+		printf("Usunieto semafor %d\n", semid);
 
+*/
     struct queue *tmp;
+    msgQInit(messageQueue);
+    char teststr[4] = "AAA";
+	struct message msgtest = createRandomMessage(0);
+	//messageQueue[0]->queue[0] = msgtest;
+	printf("%d %d\n", messageQueue[0]->first, messageQueue[0]->last);
+    printf("%d %d\n", messageQueue[0]->empty, messageQueue[0]->full);
+	putMessage(messageQueue[0], msgtest);
+    printf("%s priority %d\n", messageQueue[0]->queue[0].str, messageQueue[0]->queue[0].priority);
+    printf("%d %d\n", messageQueue[0]->first, messageQueue[0]->last);
+    printf("%d %d\n", messageQueue[0]->empty, messageQueue[0]->full);
+    msgQKill(messageQueue);
 
-	int shmid = shmget(key, sizeof(struct queue), IPC_CREAT | 0660);
+
+/*
+	int shmid = getShmID(key);
 	if(shmid != -1){
 		printf("Utworzono pamiec dzielona %d\n", shmid);
 	}
 
-	int shmid1 = shmget(key, sizeof(struct queue), IPC_CREAT | IPC_EXCL | 0660);
-	if(shmid1 != -1){
-		printf("Utworzono pamiec dzielona %d\n", shmid);
-	}
-
-	tmp = (struct queue*)shmat(shmid,NULL,0);
+	tmp = attachShm(shmid);
 	if(tmp!=NULL){
 		printf("Przyłączono pamiec dzielona %d wskaznik %p\n", shmid,tmp);
 	}
@@ -104,27 +72,18 @@ int main(){
 	printf("%s priority %d\n", tmp->queue[0].str, tmp->queue[0].priority);
 
 	int f1;
-	f1 = shmdt(tmp);
+	f1 = detachShm(tmp);
 	if(f1!=-1){
 		printf("Odlaczono segment pamieci %p\n", tmp);
 	}
 
 	
-
-	
-
 	int f2;
-	f2 = shmctl(shmid, IPC_RMID, NULL);
+	f2 = removeShm(shmid);
 	if(f2!=-1){
 		printf("Usunieto segment pamieci %d\n", shmid);
 	}
 
-	f2 = shmctl(shmid, IPC_RMID, NULL);
-	if(f2!=-1){
-		printf("Usunieto segment pamieci %d\n", shmid);
-	}
-
-	/*test*/
-
+*/
 	return 0;
 }

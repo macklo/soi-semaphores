@@ -1,7 +1,18 @@
+#ifndef SHM_H
+#define SHM_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h> 
+
 #include "const.h"
 #include "message.h"
 
-key_t getKey(char qID[3]){
+key_t getKey(const char* qID){
 	char src[8];
 	strcpy(src, "files/");
 	strcat(src, qID);
@@ -31,3 +42,5 @@ int detachShm(struct queue* q){
 int removeShm (int shmid){
 	return shmctl(shmid, IPC_RMID, NULL);
 }
+
+#endif

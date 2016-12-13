@@ -1,5 +1,12 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
+#include <time.h>
+#include <stdlib.h>
+
 #include "const.h"
 #include <string.h>
+#include <stdio.h>
 
 struct message { 
 	char str[4];
@@ -52,3 +59,34 @@ struct message createMessage(char str[4], int pri){
 	msg.priority = pri;
 	return msg;
 }
+
+struct message createRandomMessage(int pri){
+	char str[4];
+	int i;
+	for (i = 0; i<3; i++){
+		int r = rand()%3;
+		char c = 65+r;
+		str[i] = c;
+	}
+	str[3] = '\0';
+	struct message msg;
+	strcpy(msg.str, str);
+	msg.priority = pri;
+	return msg;
+}
+
+void printQ(struct queue *q){
+	int i;
+	int last;
+	if(q->empty) return;
+	i = q->first;
+	do{
+		printf("%s %d\n", q->queue[i].str, q->queue[i].priority);
+		i = i+1;
+		i = i%SIZE;
+	}while (i!= q->last);
+
+}
+
+
+#endif

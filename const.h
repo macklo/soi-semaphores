@@ -1,3 +1,6 @@
+#ifndef CONST_H
+#define CONST_H
+
 #define SIZE 10
 
 #define A_ID 0
@@ -11,3 +14,12 @@
 #define A "A"
 #define B "B" 
 #define C "C"
+
+#define EMPTY 0
+#define FULL 1
+#define MUTEX 2 
+
+const char *mFileID[3] = {"AM", "BM", "CM"};
+const char *sFileID[3] = {"AS", "BS", "CS"};
+
+#endif
