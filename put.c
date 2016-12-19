@@ -37,37 +37,25 @@ int main(int argc, char * argv[]){
 	}
 	printf("qID: %d, pri: %d\n", qID, pri);
 
-	srand(time(NULL)+ qID+pri*3);
+	srand(time(NULL));
 
 	msgQInit(messageQueue);
 	semIDInit(semID);
-
-	ex = exInit();
-	exSemID = semEXInit();
-
-	struct message msg;
-
-	while (1){
-		/*Chcek if exit*/
+	int i;
+	for (int i = 0; i < 1; ++i)
+	{
+		struct message msg;
 
 		msg = createRandomMessage(pri);
-
 		down(semID[qID], EMPTY);
 		down(semID[qID], MUTEX);
-		printf("%d %s\n",qID, msg.str);
 		putMessage(messageQueue[qID], msg);
-		//printQ(messageQueue[qID]);
-		//printf("%d %d\n", messageQueue[qID]->first, messageQueue[qID]->last);
+		printQ(messageQueue[qID]);
+		printf("\n");
 		up(semID[qID], MUTEX);
 		up(semID[qID], FULL);
-
-		down(exSemID, 0);
-		if(*ex == 1) break;
-		up(exSemID, 0 );
-		printf("\n");
-
-		usleep(ms*2000);
 	}
+
 	semEXKill(exSemID);
 	exKill(ex);
 

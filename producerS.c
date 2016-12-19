@@ -37,7 +37,7 @@ int main(int argc, char * argv[]){
 	}
 	printf("qID: %d, pri: %d\n", qID, pri);
 
-	srand(time(NULL)+ qID+pri*3);
+	srand(time(NULL) + qID+pri*3);
 
 	msgQInit(messageQueue);
 	semIDInit(semID);
@@ -51,13 +51,11 @@ int main(int argc, char * argv[]){
 		/*Chcek if exit*/
 
 		msg = createRandomMessage(pri);
-
 		down(semID[qID], EMPTY);
 		down(semID[qID], MUTEX);
-		printf("%d %s\n",qID, msg.str);
 		putMessage(messageQueue[qID], msg);
-		//printQ(messageQueue[qID]);
-		//printf("%d %d\n", messageQueue[qID]->first, messageQueue[qID]->last);
+		printQ(messageQueue[qID]);
+		printf("%d %d\n", messageQueue[qID]->first, messageQueue[qID]->last);
 		up(semID[qID], MUTEX);
 		up(semID[qID], FULL);
 
@@ -66,7 +64,7 @@ int main(int argc, char * argv[]){
 		up(exSemID, 0 );
 		printf("\n");
 
-		usleep(ms*2000);
+		usleep(ms*3000);
 	}
 	semEXKill(exSemID);
 	exKill(ex);

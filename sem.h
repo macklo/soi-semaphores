@@ -33,6 +33,16 @@ int down(int semid, int semnum){
 	return 0;
 }
 
+int downNoWait(int semid, int semnum){
+	buf.sem_num = semnum;
+	buf.sem_op = -1;
+	buf.sem_flg = IPC_NOWAIT;
+	if (semop(semid, &buf, 1) == -1)
+		return -1;
+	return 0;
+}
+
+
 int getSemID(key_t key){
 	int tmp = semget(key, 3, IPC_CREAT|0660);
 	return tmp;

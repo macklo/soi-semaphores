@@ -59,7 +59,8 @@ int putMessage (struct queue *q, struct message msg){
 				int toSave;
 				if (q->first == 0) toSave = SIZE - 1;
 				else toSave = q->first - 1;
-				while ( q->queue[i].priority == 1 && toSave!=q->last){
+				while ( q->queue[i].priority == 0 && i!=q->last){
+					//printf("i: %d, toSave: %d\n",i, toSave);
 					q->queue[toSave] = q->queue[i];
 					toSave++;
 					i++;
@@ -119,6 +120,12 @@ void printQ(struct queue *q){
 		i = i%SIZE;
 	}while (i!= q->last);
 
+}
+
+char getRandomLetter(){
+	int r = rand()%3;
+	char c = 65+r;
+	return c;
 }
 
 
